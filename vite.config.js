@@ -1,18 +1,33 @@
 /*
  * @Date: 2022-07-23 14:46:51
  * @LastEditors: chenwk
- * @LastEditTime: 2022-07-30 14:30:32
+ * @LastEditTime: 2022-07-30 16:02:10
  * @FilePath: \vite-vue3-js\vite.config.js
  */
 import { defineConfig, loadEnv } from 'vite'
 import { resolve } from 'path'
 //提供 Vue 3 单文件组件支持
+// https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
 import vue from '@vitejs/plugin-vue'
 //提供传统浏览器兼容性支持
+// https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
 import legacy from '@vitejs/plugin-legacy'
 // gzip 插件
 // https://github.com/vbenjs/vite-plugin-compression/blob/main/README.zh_CN.md
 import viteCompression from 'vite-plugin-compression';
+// https://vite-plugin-pwa.netlify.app/guide/pwa-minimal-requirements.html#web-app-manifest
+import { VitePWA } from 'vite-plugin-pwa'
+// 组合式api自动导入
+// https://github.com/antfu/unplugin-auto-import
+import AutoImport from 'unplugin-auto-import/vite'
+//组件自动导入
+// https://github.com/antfu/unplugin-auto-import
+import Components from 'unplugin-vue-components/vite'
+
+
+
+
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -113,6 +128,51 @@ export default defineConfig(({ command, mode }) => {
         targets: ['defaults', 'not IE 11']
       }),
       viteCompression(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+        manifest: {
+          name: 'chenwk',
+          short_name: 'chenwk',
+          description: 'chenwk',
+          theme_color: '#ffffff',
+          icons: [
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png'
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png'
+            }
+          ]
+        }
+      }),
+      AutoImport({
+        imports: [
+          'vue',
+          'vue-router',
+          'pinia'
+        ],
+        // AutoImport.d ts的全局声明,
+        // dts: './auto-imports.d.js',
+        dts: false,
+        // 自动导入Vue模板  
+        vueTemplate: true,
+      }),
+      Components({
+        // relative paths to the directory to search for components.
+        dirs: ['src/components'],
+        // valid file extensions for components.
+        extensions: ['vue'],
+        // search for subdirectories
+        deep: true,
+        // 生成components.d ts的全局声明,
+        // dts: './auto-components.d.js',
+        dts: false,
+      })
     ],
   }
 })

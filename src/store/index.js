@@ -1,10 +1,10 @@
 /*
  * @Date: 2022-07-30 11:17:46
  * @LastEditors: chenwk
- * @LastEditTime: 2022-07-30 14:32:23
+ * @LastEditTime: 2022-07-30 16:01:48
  * @FilePath: \vite-vue3-js\src\store\index.js
  */
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 export const useCounterStore = defineStore('counter', {
     state: () => {
         return {
@@ -18,3 +18,6 @@ export const useCounterStore = defineStore('counter', {
         },
     },
 })
+//热更新
+if (import.meta.hot)
+    import.meta.hot.accept(acceptHMRUpdate(useCounterStore, import.meta.hot))
